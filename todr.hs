@@ -5,7 +5,7 @@ module TODR(
 , HasTakeOffDistanceAltitude(..)  
 , TakeOffDistance(..)
 , HasTakeOffDistance(..)
-, c172s_2550lbs
+, c172s_2550lbs_groundroll_takeoff
 , PressureAltitude
 , AsPressureAltitude(..)
 , todr
@@ -55,9 +55,9 @@ data TakeOffDistance =
 
 makeClassy ''TakeOffDistance
 
-c172s_2550lbs ::
+c172s_2550lbs_groundroll_takeoff ::
   TakeOffDistance
-c172s_2550lbs =
+c172s_2550lbs_groundroll_takeoff =
   TakeOffDistance
     (
       TakeOffDistanceAltitude
@@ -183,5 +183,5 @@ todr ::
   -> Temperature
   -> TakeOffDistance
   -> Double
-todr =
+todr (PressureAltitude pa) (Temperature temp) =
   error "todo"

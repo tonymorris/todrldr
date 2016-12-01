@@ -186,6 +186,13 @@ todr ::
 todr (PressureAltitude pa) (Temperature temp) =
   error "todo"
 
+example ::
+  TakeOffDistance
+  -> Int
+example (TakeOffDistance _ _ _ (TakeOffDistanceAltitude _ x _ _ _) _ _ _ _ (TakeOffDistanceAltitude _ _ _ y _)) =
+  x + y
+
+
 -- | 50 ft from pressure altitude, between 0 and 1000 ft, at 0 degrees
 todr_0d_0ft :: Double -> Double
-todr_0d_0ft x = (27/200)*x+1465
+todr_0d_0ft x = (135/1000)*x+1465

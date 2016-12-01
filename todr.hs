@@ -183,8 +183,22 @@ todr ::
   -> Temperature
   -> TakeOffDistance
   -> Double
-todr (PressureAltitude pa) (Temperature temp) =
+todr pa@(PressureAltitude pa') temp@(Temperature temp') =
   error "todo"
+
+intervalsPressureAltitude ::
+  PressureAltitude
+  -> TakeOffDistance
+  -> (TakeOffDistanceAltitude, TakeOffDistanceAltitude)
+intervalsPressureAltitude (PressureAltitude n) (TakeOffDistance _0 _1 _2 _3 _4 _5 _6 _7 _8) =
+  undefined
+  
+intervalsTemperature ::
+  Temperature
+  -> TakeOffDistanceAltitude
+  -> (Int, Int)
+intervalsTemperature (Temperature n) (TakeOffDistanceAltitude _0 _1 _2 _3 _4) =
+  undefined
 
 example ::
   TakeOffDistance

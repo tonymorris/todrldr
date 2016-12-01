@@ -206,7 +206,6 @@ todr pa@(PressureAltitude pa') temp@(Temperature temp') chart =
 calculateTodr :: 
   Double -- a
   -> Double -- b
-  -> Double -- c
   -> Double -- d
   -> Double -- e
   -> Double -- k_1
@@ -214,10 +213,11 @@ calculateTodr ::
   -> Double -- k_3
   -> Double -- k_4
   -> Double -- todr
-calculateTodr a b c d e k_1 k_2 k_3 k_4 =
-  ((b-a)/1000)*((((e-d)/1000)*(k_3 - k_1) + k_1)
-  - (((e-d)/1000)*(k_4 - k_2) + k_2)) 
-  + (((e-d)/1000)*(k_4 - k_2) + k_2)
+calculateTodr a b d e k_1 k_2 k_3 k_4 =
+  ((b-a)/10)*
+  ((((e-d)/1000)*(k_4-k_2)+k_2) 
+  - (((e-d)/1000)*(k_3 - k_1) + k_1))
+  + (((e-d)/1000)*(k_3 - k_1) + k_1)
 
 intervalsPressureAltitude ::
   PressureAltitude

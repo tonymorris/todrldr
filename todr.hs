@@ -183,8 +183,11 @@ todr ::
   -> Temperature
   -> TakeOffDistance
   -> Double
-todr pa@(PressureAltitude pa') temp@(Temperature temp') =
-  error "todo"
+todr pa@(PressureAltitude pa') temp@(Temperature temp') chart =
+  let (pa1, pa2) = intervalsPressureAltitude pa chart
+      (x1, y1)   = intervalsTemperature temp pa1
+      (x2, y2)   = intervalsTemperature temp pa2
+  in  undefined
 
 intervalsPressureAltitude ::
   PressureAltitude
@@ -192,6 +195,7 @@ intervalsPressureAltitude ::
   -> (TakeOffDistanceAltitude, TakeOffDistanceAltitude)
 intervalsPressureAltitude (PressureAltitude n) (TakeOffDistance _0 _1 _2 _3 _4 _5 _6 _7 _8) 
   | n >= 0 && n < 1000     = (_0, _1)
+  | n >= 1000 && n < 2000  = (_1, _2)
   | n >= 2000 && n < 3000  = (_2, _3)
   | n >= 3000 && n < 4000  = (_3, _4)
   | n >= 4000 && n < 5000  = (_4, _5)

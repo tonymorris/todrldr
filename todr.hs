@@ -190,19 +190,26 @@ instance AsTemperature Double where
 '---'-----'------'-----'
 -}
 
+-- todr (PressureAltitude 100) (Temperature 10) c172s_2550lbs_groundroll_takeoff
+
 todr ::
   PressureAltitude
   -> Temperature
   -> TakeOffDistance
-  -> (Temperature, PressureAltitude, Double,Double,Double,Double)
+  -> Double
 todr e@(PressureAltitude pa) b@(Temperature temp) chart =
-  let (a, c)       = undefined
-      (d, f)       = intervalsPressureAltitude e chart
-      (k_1, k_2)   = intervalsTemperature b d
-      (k_3, k_4)   = intervalsTemperature b f
-  in  (b, e, k_1, k_2, k_3, k_4)
+  let (x_1, x_2) = intervalsPressureAltitude e chart
+      (k_1, k_2) = intervalsTemperature b x_1
+      (k_3, k_4) = intervalsTemperature b x_2
+  in  
+    calculateTodr 10 b 1000 e k_1 k_2 k_3 k_4
 
--- b::Temperature e::PressureAltitude
+paRoundDown :: 
+  PressureAltitude
+  -> TakeOffDistance
+  -> TakeOffDistanceAltitude
+paRoundDown pa tod =
+  fst (intervalsPressureAltitude pa tod)
 
 calculateTodr :: 
   Double
@@ -249,7 +256,6 @@ intervalsTemperature (Temperature n) (TakeOffDistanceAltitude _0 _1 _2 _3 _4)
   | n >= 10 && n < 20  = (_1, _2)
   | n >= 20 && n < 30  = (_2, _3)
   | n >= 30 && n <= 40 = (_3, _4)
-
 
 example ::
   TakeOffDistance

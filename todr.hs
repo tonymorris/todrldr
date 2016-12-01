@@ -201,15 +201,10 @@ todr e@(PressureAltitude pa) b@(Temperature temp) chart =
   let (x_1, x_2) = intervalsPressureAltitude e chart
       (k_1, k_2) = intervalsTemperature b x_1
       (k_3, k_4) = intervalsTemperature b x_2
+      a = tempLower b
+      d = paLower e
   in  
-    calculateTodr 10 b 1000 e k_1 k_2 k_3 k_4
-
-paRoundDown :: 
-  PressureAltitude
-  -> TakeOffDistance
-  -> TakeOffDistanceAltitude
-paRoundDown pa tod =
-  fst (intervalsPressureAltitude pa tod)
+    calculateTodr a b d e k_1 k_2 k_3 k_4
 
 calculateTodr :: 
   Double
@@ -232,6 +227,28 @@ tpMinusDouble (Temperature x) y = x - y
 
 paMinusDouble :: PressureAltitude -> Double -> Double
 paMinusDouble (PressureAltitude x) y = x - y
+
+tempLower ::
+  Temperature
+  -> Double
+tempLower (Temperature n)
+  | n >= 0 && n < 10   = 0
+  | n >= 10 && n < 20  = 10
+  | n >= 20 && n < 30  = 20
+  | n >= 30 && n <= 40 = 30
+
+paLower ::
+  PressureAltitude
+  -> Double
+paLower (PressureAltitude n)
+  | n >= 0 && n < 1000     = 0
+  | n >= 1000 && n < 2000  = 1000
+  | n >= 2000 && n < 3000  = 2000
+  | n >= 3000 && n < 4000  = 3000
+  | n >= 4000 && n < 5000  = 4000
+  | n >= 5000 && n < 6000  = 5000
+  | n >= 6000 && n < 7000  = 6000
+  | n >= 7000 && n <= 8000 = 7000
 
 intervalsPressureAltitude ::
   PressureAltitude

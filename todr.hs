@@ -190,23 +190,28 @@ intervalsPressureAltitude ::
   PressureAltitude
   -> TakeOffDistance
   -> (TakeOffDistanceAltitude, TakeOffDistanceAltitude)
-intervalsPressureAltitude (PressureAltitude n) (TakeOffDistance _0 _1 _2 _3 _4 _5 _6 _7 _8) =
-  undefined
-  
+intervalsPressureAltitude (PressureAltitude n) (TakeOffDistance _0 _1 _2 _3 _4 _5 _6 _7 _8) 
+  | n >= 0 && n < 1000     = (_0, _1)
+  | n >= 2000 && n < 3000  = (_2, _3)
+  | n >= 3000 && n < 4000  = (_3, _4)
+  | n >= 4000 && n < 5000  = (_4, _5)
+  | n >= 5000 && n < 6000  = (_5, _6)
+  | n >= 6000 && n < 7000  = (_6, _7)
+  | n >= 7000 && n <= 8000 = (_7, _8)
+
 intervalsTemperature ::
   Temperature
   -> TakeOffDistanceAltitude
   -> (Int, Int)
-intervalsTemperature (Temperature n) (TakeOffDistanceAltitude _0 _1 _2 _3 _4) =
-  undefined
+intervalsTemperature (Temperature n) (TakeOffDistanceAltitude _0 _1 _2 _3 _4)
+  | n >= 0 && n < 10   = (_0, _1)
+  | n >= 10 && n < 20  = (_1, _2)
+  | n >= 20 && n < 30  = (_2, _3)
+  | n >= 30 && n <= 40 = (_3, _4)
+
 
 example ::
   TakeOffDistance
   -> Int
 example (TakeOffDistance _ _ _ (TakeOffDistanceAltitude _ x _ _ _) _ _ _ _ (TakeOffDistanceAltitude _ _ _ y _)) =
   x + y
-
-
--- | 50 ft from pressure altitude, between 0 and 1000 ft, at 0 degrees
-todr_0d_0ft :: Double -> Double
-todr_0d_0ft x = (135/1000)*x+1465

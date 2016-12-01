@@ -192,6 +192,22 @@ instance AsTemperature Double where
 
 -- todr (PressureAltitude 100) (Temperature 10) c172s_2550lbs_groundroll_takeoff
 
+-- |
+--
+-- >>> todr (PressureAltitude 3500) (Temperature 25) c172s_2550lbs_groundroll_takeoff
+-- 1427.5
+--
+-- >>> todr (PressureAltitude 3000) (Temperature 20) c172s_2550lbs_groundroll_takeoff
+-- 1310.0
+--
+-- >>> todr (PressureAltitude 3000) (Temperature 25) c172s_2550lbs_groundroll_takeoff
+-- 1360.0
+--
+-- >>> todr (PressureAltitude 3500) (Temperature 20) c172s_2550lbs_groundroll_takeoff
+-- 1375.0
+--
+-- >>> todr (PressureAltitude 3250) (Temperature 27) c172s_2550lbs_groundroll_takeoff
+-- 1414.25
 todr ::
   PressureAltitude
   -> Temperature

@@ -16,15 +16,15 @@ import Control.Lens
 data TakeOffDistanceAltitude =
   TakeOffDistanceAltitude {
     _temp00 ::
-      Double
+      Int
   , _temp10 ::
-      Double
+      Int
   , _temp20 ::
-      Double
+      Int
   , _temp30 ::
-      Double
+      Int
   , _temp40 ::
-      Double
+      Int
   }
   deriving (Eq, Ord, Show)
 
@@ -134,7 +134,7 @@ c172s_2550lbs_groundroll_takeoff =
 
 newtype PressureAltitude =
   PressureAltitude
-    Double
+    Int
   deriving (Eq, Ord, Show)
 
 class AsPressureAltitude r0 where
@@ -145,7 +145,7 @@ instance AsPressureAltitude PressureAltitude where
   _PressureAltitude =
     id
 
-instance AsPressureAltitude Double where
+instance AsPressureAltitude Int where
   _PressureAltitude =
     prism'
       (\(PressureAltitude n) -> n)
@@ -157,7 +157,7 @@ instance AsPressureAltitude Double where
 
 newtype Temperature =
   Temperature
-    Double
+    Int
   deriving (Eq, Ord, Show)
 
 class AsTemperature r0 where
@@ -168,7 +168,7 @@ instance AsTemperature Temperature where
   _Temperature =
     id
 
-instance AsTemperature Double where
+instance AsTemperature Int where
   _Temperature =
     prism'
       (\(Temperature n) -> n)
@@ -177,6 +177,58 @@ instance AsTemperature Double where
                  Nothing
               else
                  Just (Temperature n))
+
+
+intervalsPressureAltitude ::
+  PressureAltitude
+  -> TakeOffDistance
+  -> (TakeOffDistanceAltitude, TakeOffDistanceAltitude, Int)
+intervalsPressureAltitude (PressureAltitude n) (TakeOffDistance _0 _1 _2 _3 _4 _5 _6 _7 _8) =
+  let (d, m) =
+        n `divMod` 1000
+      (r, s) =
+        case d of
+          0 ->
+            (_0, _1)
+          1 ->
+            (_1, _2)
+          2 ->
+            (_2, _3)
+          3 ->
+            (_3, _4)
+          4 ->
+            (_4, _5)
+          5 ->
+            (_5, _6)
+          6 ->
+            (_6, _7)
+          7 ->
+            (_7, _8)
+          8 ->
+            (_7, _8)
+  in  (r, s, m)
+
+intervalsTemperature ::
+  Temperature
+  -> TakeOffDistanceAltitude
+  -> (Int, Int, Int)
+intervalsTemperature (Temperature n) (TakeOffDistanceAltitude _0 _1 _2 _3 _4) =
+  let (d, m) =
+        n `divMod` 10
+      (r, s) =
+        case d of
+          0 ->
+            (_0, _1)
+          1 ->
+            (_1, _2)
+          2 ->
+            (_2, _3)
+          3 ->
+            (_3, _4)
+          4 ->
+            (_3, _4)          
+  in  (r, s, m)
+
 
 {-
 .---.-----.------.-----.
@@ -217,6 +269,14 @@ todr ::
   -> TakeOffDistance
   -> Double
 todr e@(PressureAltitude pa) b@(Temperature temp) chart =
+  let (x,  y,  q) = intervalsPressureAltitude e chart
+      (x0, y0, r) = intervalsTemperature b x
+      (x1, y1, _) = intervalsTemperature b y
+      normpa g h  = fromIntegral ((h - g) * q) / 1000 + fromIntegral g
+      normtp g h  = (h - g) * fromIntegral r / 10 + g
+  in  normtp (normpa x0 x1) (normpa y0 y1)
+
+  {-
   let (x_1, x_2) = intervalsPressureAltitude e chart
       (k_1, k_2) = intervalsTemperature b x_1
       (k_3, k_4) = intervalsTemperature b x_2
@@ -224,7 +284,9 @@ todr e@(PressureAltitude pa) b@(Temperature temp) chart =
       d = paLower e
   in  
     calculateTodr a b d e k_1 k_2 k_3 k_4
+  -}
 
+{-
 calculateTodr :: 
   Double
   -> Temperature
@@ -298,3 +360,4 @@ example ::
   -> Double
 example (TakeOffDistance _ _ _ (TakeOffDistanceAltitude _ x _ _ _) _ _ _ _ (TakeOffDistanceAltitude _ _ _ y _)) =
   x + y
+-}

@@ -185,3 +185,7 @@ todr ::
   -> Double
 todr (PressureAltitude pa) (Temperature temp) =
   error "todo"
+
+-- | 50 ft from pressure altitude, between 0 and 1000 ft, at 0 degrees
+todr_0d_0ft :: Double -> Double
+todr_0d_0ft x = (27/200)*x+1465

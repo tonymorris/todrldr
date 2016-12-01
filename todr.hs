@@ -16,15 +16,15 @@ import Control.Lens
 data TakeOffDistanceAltitude =
   TakeOffDistanceAltitude {
     _temp00 ::
-      Int
+      Double
   , _temp10 ::
-      Int
+      Double
   , _temp20 ::
-      Int
+      Double
   , _temp30 ::
-      Int
+      Double
   , _temp40 ::
-      Int
+      Double
   }
   deriving (Eq, Ord, Show)
 
@@ -134,7 +134,7 @@ c172s_2550lbs_groundroll_takeoff =
 
 newtype PressureAltitude =
   PressureAltitude
-    Int
+    Double
   deriving (Eq, Ord, Show)
 
 class AsPressureAltitude r0 where
@@ -145,7 +145,7 @@ instance AsPressureAltitude PressureAltitude where
   _PressureAltitude =
     id
 
-instance AsPressureAltitude Int where
+instance AsPressureAltitude Double where
   _PressureAltitude =
     prism'
       (\(PressureAltitude n) -> n)
@@ -157,7 +157,7 @@ instance AsPressureAltitude Int where
 
 newtype Temperature =
   Temperature
-    Int
+    Double
   deriving (Eq, Ord, Show)
 
 class AsTemperature r0 where
@@ -168,7 +168,7 @@ instance AsTemperature Temperature where
   _Temperature =
     id
 
-instance AsTemperature Int where
+instance AsTemperature Double where
   _Temperature =
     prism'
       (\(Temperature n) -> n)
@@ -178,19 +178,7 @@ instance AsTemperature Int where
               else
                  Just (Temperature n))
 
-todr ::
-  PressureAltitude
-  -> Temperature
-  -> TakeOffDistance
-  -> Double
-todr pa@(PressureAltitude pa') temp@(Temperature temp') chart =
-  let (pa1, pa2) = intervalsPressureAltitude pa chart
-      (x1, y1)   = intervalsTemperature temp pa1
-      (x2, y2)   = intervalsTemperature temp pa2
-  in  undefined
-
 {-
-
 .---.-----.------.-----.
 |   |  a  |  b   |  c  |
 :---+-----+------+-----:
@@ -200,24 +188,43 @@ todr pa@(PressureAltitude pa') temp@(Temperature temp') chart =
 :---+-----+------+-----:
 | f | k_3 |      | k_4 |
 '---'-----'------'-----'
-
 -}
 
+todr ::
+  PressureAltitude
+  -> Temperature
+  -> TakeOffDistance
+  -> (Temperature, PressureAltitude, Double,Double,Double,Double)
+todr e@(PressureAltitude pa) b@(Temperature temp) chart =
+  let (a, c)       = undefined
+      (d, f)       = intervalsPressureAltitude e chart
+      (k_1, k_2)   = intervalsTemperature b d
+      (k_3, k_4)   = intervalsTemperature b f
+  in  (b, e, k_1, k_2, k_3, k_4)
+
+-- b::Temperature e::PressureAltitude
+
 calculateTodr :: 
-  Double -- a
-  -> Double -- b
-  -> Double -- d
-  -> Double -- e
-  -> Double -- k_1
-  -> Double -- k_2
-  -> Double -- k_3
-  -> Double -- k_4
-  -> Double -- todr
+  Double
+  -> Temperature
+  -> Double
+  -> PressureAltitude
+  -> Double
+  -> Double
+  -> Double
+  -> Double
+  -> Double
 calculateTodr a b d e k_1 k_2 k_3 k_4 =
-  ((b-a)/10)*
-  ((((e-d)/1000)*(k_4-k_2)+k_2) 
-  - (((e-d)/1000)*(k_3 - k_1) + k_1))
-  + (((e-d)/1000)*(k_3 - k_1) + k_1)
+  ((b`tpMinusDouble`a)/10)*
+  ((((e`paMinusDouble`d)/1000)*(k_4-k_2)+k_2) 
+  - (((e`paMinusDouble`d)/1000)*(k_3 - k_1) + k_1))
+  + (((e`paMinusDouble`d)/1000)*(k_3 - k_1) + k_1)
+
+tpMinusDouble :: Temperature -> Double -> Double
+tpMinusDouble (Temperature x) y = x - y
+
+paMinusDouble :: PressureAltitude -> Double -> Double
+paMinusDouble (PressureAltitude x) y = x - y
 
 intervalsPressureAltitude ::
   PressureAltitude
@@ -236,7 +243,7 @@ intervalsPressureAltitude (PressureAltitude n) (TakeOffDistance _0 _1 _2 _3 _4 _
 intervalsTemperature ::
   Temperature
   -> TakeOffDistanceAltitude
-  -> (Int, Int)
+  -> (Double, Double)
 intervalsTemperature (Temperature n) (TakeOffDistanceAltitude _0 _1 _2 _3 _4)
   | n >= 0 && n < 10   = (_0, _1)
   | n >= 10 && n < 20  = (_1, _2)
@@ -246,6 +253,6 @@ intervalsTemperature (Temperature n) (TakeOffDistanceAltitude _0 _1 _2 _3 _4)
 
 example ::
   TakeOffDistance
-  -> Int
+  -> Double
 example (TakeOffDistance _ _ _ (TakeOffDistanceAltitude _ x _ _ _) _ _ _ _ (TakeOffDistanceAltitude _ _ _ y _)) =
   x + y

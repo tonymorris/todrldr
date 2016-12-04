@@ -1,16 +1,23 @@
+{-# LANGUAGE TemplateHaskell #-}
+
+import Control.Lens
+
 data Arm =
   Arm {
-    armmeasure ::
-      Int
-  , armrange ::
+    _armmeasure ::
+      Int -- inches
+  , _armrange ::
       Maybe (Int, Int)
+  , _name ::
+      Maybe String
   } deriving (Eq, Ord, Show)
 
 armnorange :: 
   Int
+  -> Maybe String
   -> Arm
-armnorange n =
-  Arm n Nothing
+armnorange n m =
+  Arm n Nothing m
 
 data AircraftArm =
   AircraftArm {
@@ -35,50 +42,81 @@ c172arm ::
 c172arm a =
   AircraftArm
     a
-    (Arm 37 (Just (34, 46)))
-    (armnorange 48)
-    (armnorange 73)
-    (Arm 95 (Just (82, 108)))
-    (Arm 123 (Just (108, 142)))
+    (Arm 37 (Just (34, 46)) (Just "front seat"))
+    (armnorange 48 (Just "fuel"))
+    (armnorange 73 (Just "rear seat"))
+    (Arm 95 (Just (82, 108)) (Just "baggage A"))
+    (Arm 123 (Just (108, 142)) (Just "baggage B"))
 
 -- baggage "A" maximum 120lb
 -- baggage "B" maximum 50lb
 -- maximum overall baggage 120lb
 
-data WeightUnit =
-  Pounds
-  | Kilograms
-  deriving (Eq, Ord, Show)      
-
-data FuelWeightUnit =
-  FuelWeight WeightUnit
-  | Gallons
-  | Litres
-  deriving (Eq, Ord, Show)
-
 data AircraftWeight =
   AircraftWeight {
     _bew ::
-      (Double, WeightUnit)
+      Double
   , _frontseatweight ::
-      (Double, WeightUnit)
+      Double -- pounds
   , _fuelweight ::
-      (Double, FuelWeightUnit)
+      Double -- gallons
   , _rearseatweight ::
-      (Double, WeightUnit)
+      Double
   , _baggageaweight ::
-      (Double, WeightUnit)
+      Double
   , _baggagebweight ::
-      (Double, WeightUnit)
+      Double
   }
   deriving (Eq, Ord, Show)
 
+data MaximumWeight =
+  MaximumWeight {
+    baggagea ::
+      Int
+  , baggageb ::
+      Int
+  , totalbaggage ::
+      Int
+  , fuel ::
+      Int
+  , mrw ::
+      Int
+  , mtow ::
+      Int
+  }
+  deriving (Eq, Ord, Show)
+    
+c172RMaximumWeight ::
+  MaximumWeight
+c172RMaximumWeight =
+  MaximumWeight
+    120
+    50
+    120
+    336
+    2558
+    2550
+
 sample =
   AircraftWeight
-    (770, Kilograms)
-    (165, Kilograms)
-    (30, Gallons)
-    (80, Kilograms)
-    (10, Kilograms)
-    (1, Kilograms)
-    
+    1691.6
+    363.763
+    30
+    176.37
+    22.0462
+    2.20462
+
+-- https://hackage.haskell.org/package/hgeometry-0.5.0.0/docs/Data-Geometry-Polygon.html\
+
+-- AircraftArm -> MaximumWeight -> AircraftWeight -> CGEnvelope -> Report
+
+{-
+Weight (lbs): 1663.2
+Arm (in): 40.719
+Moment (lb-in): 67724
+Basic Empty Weight
+
+    Weight (lbs): 1691.6
+    Arm (in): 40.600
+    Moment (lb-in): 68679
+-}

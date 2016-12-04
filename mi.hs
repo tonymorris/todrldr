@@ -106,7 +106,7 @@ sample =
     22.0462
     2.20462
 
--- https://hackage.haskell.org/package/hgeometry-0.5.0.0/docs/Data-Geometry-Polygon.html\
+-- https://hackage.haskell.org/package/hgeometry-0.5.0.0/docs/Data-Geometry-Polygon.html
 
 -- AircraftArm -> MaximumWeight -> AircraftWeight -> CGEnvelope -> Report
 
